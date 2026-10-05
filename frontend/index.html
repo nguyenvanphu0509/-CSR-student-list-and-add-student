@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Danh sách CSR · StudentSpace</title>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script type="module" src="/assets/js/app.js"></script>
+</head>
+<body class="csr-body">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/csr"><span class="brand-icon" aria-hidden="true">S<span>·</span></span>StudentSpace</a>
+      <nav aria-label="Điều hướng chính">
+        <a class="nav-link" href="/students">Danh sách</a>
+        <a class="nav-link nav-create" href="/trash">Thùng rác</a>
+        <a class="nav-link nav-create" href="/activity">Lịch sử</a>
+      </nav>
+      <span class="workspace-label"><span class="status-dot" aria-hidden="true"></span> Không gian học tập</span>
+    </div>
+  </header>
+  <main class="dashboard" id="students-app">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-content">
+        <p class="hero-eyebrow"><span aria-hidden="true">✳</span> STUDENTSPACE / KHÔNG GIAN HỌC TẬP</p>
+        <h1 id="hero-title">Kết nối hôm nay.<br><span>Kiến tạo ngày mai.</span></h1>
+        <p class="hero-description">Danh sách lớp học luôn trong tầm tay. Thêm thành viên mới và thấy thay đổi ngay trên trang.</p>
+        <div class="hero-actions"><a class="button hero-button" href="#student-list">Khám phá lớp học ↗</a><a class="button hero-button-outline" href="#create-student">Thêm thành viên ＋</a></div>
+        <div class="hero-caption"><span class="hero-caption-line" aria-hidden="true"></span> Cùng học tập. Cùng tiến xa.</div>
+      </div>
+      <div class="hero-art" aria-hidden="true"><div class="art-grid"></div><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="hero-sphere"></div><span class="art-spark spark-one">✳</span><span class="art-spark spark-two">＋</span><span class="art-coordinate">SPACE FOR<br>YOUR NEXT CHAPTER.</span><span class="art-marker">01 / ∞</span></div>
+    </section>
+    <div class="page-heading"><div><p class="eyebrow">TỔNG QUAN LỚP HỌC</p><h2 class="page-title">Sinh viên</h2><p class="subtitle">Theo dõi danh sách và chào đón những thành viên mới.</p></div><a class="button button-secondary" href="#create-student">＋ Thêm sinh viên</a></div>
+    <aside class="notice rendering-note"><strong>CSR Student List</strong> · Browser lấy JSON và dựng danh sách bằng JavaScript. Thêm sinh viên cập nhật ngay, không reload trang. <a href="/students">So sánh bản SSR →</a></aside>
+    <noscript><div class="notice notice-error">Bản CSR cần JavaScript để dựng danh sách. <a href="/students">Mở bản SSR hoạt động không cần JavaScript.</a></div></noscript>
+    <p id="app-notice" class="notice notice-success" role="status" aria-live="polite" hidden></p>
+    <section class="summary-grid" aria-label="Tổng quan">
+      <div class="stat-card"><div><p class="stat-label">Tổng số sinh viên</p><p class="stat-number"><b id="student-total">—</b><span> sinh viên</span></p></div><span class="stat-icon" aria-hidden="true">↗</span></div>
+      <div class="intro-card"><span class="intro-icon" aria-hidden="true">✦</span><div><h2>Mỗi kết nối, một khởi đầu.</h2><p>Thêm sinh viên mới để cùng xây dựng lớp học của bạn.</p></div></div>
+    </section>
+    <div class="content-grid">
+      <section class="panel student-panel" id="student-list" aria-labelledby="list-title">
+        <div class="panel-heading"><div><h2 id="list-title">Danh sách sinh viên <span class="count-badge" id="student-count">—</span></h2><p>Thông tin sinh viên trong lớp học của bạn.</p></div><span class="panel-tag">CSR</span></div>
+        <form class="list-filters" id="student-filters" role="search">
+          <div class="search-field"><label for="student-search">Tìm sinh viên</label><input id="student-search" name="q" type="search" maxlength="254" placeholder="Tên hoặc email, có thể nhập không dấu"></div>
+          <div><label for="student-sort">Sắp xếp</label><select id="student-sort" name="sort"><option value="original">Thứ tự thêm</option><option value="name-asc">Tên A–Z</option><option value="name-desc">Tên Z–A</option></select></div>
+          <button class="button button-secondary" type="reset">Đặt lại</button>
+        </form>
+        <div id="student-list-content" aria-busy="true"><p class="empty-state" role="status">Đang tải danh sách sinh viên…</p></div>
+      </section>
+      <section class="panel form-panel" id="create-student" aria-labelledby="form-title">
+        <div class="form-heading"><span class="form-icon" aria-hidden="true">＋</span><h2 id="form-title">Thêm sinh viên</h2><p>Chào đón một thành viên mới vào lớp học.</p></div>
+        <!-- Form được tạo bởi StudentForm, với input đồng bộ vào state. -->
+        <div id="student-form-content"></div>
+      </section>
+    </div>
+  </main>
+  <footer class="footer"><span>StudentSpace</span><span>Cùng học tập. Cùng tiến xa.</span></footer>
+</body>
+</html>

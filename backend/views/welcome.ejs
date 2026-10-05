@@ -1,0 +1,15 @@
+<%- include('partials/header', { title: 'Chào mừng' }) %>
+  <main id="main-content" class="welcome-page">
+    <%- include('partials/welcome-orbits') %>
+    <div class="welcome-content">
+      <%- include('partials/welcome-content') %>
+    </div>
+    <% /* Bản màu đối ứng nằm trùng vị trí; chỉ lớp này bị clip để chữ luôn rõ. */ %>
+    <div class="welcome-reveal transition-circle" transition-style="out:circle:center" aria-hidden="true" inert>
+      <%- include('partials/welcome-orbits') %>
+      <div class="welcome-content">
+        <%- include('partials/welcome-content') %>
+      </div>
+    </div>
+  </main>
+<%- include('partials/footer') %>

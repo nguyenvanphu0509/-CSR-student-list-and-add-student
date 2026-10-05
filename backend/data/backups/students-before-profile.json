@@ -1,0 +1,27 @@
+[
+  {
+    "id": "051be957-8905-4cdd-bf41-60e078d89862",
+    "name": "Nguyễn Minh An",
+    "email": "minhan@example.com"
+  },
+  {
+    "id": "526175b3-7884-4275-bf14-a3c5d646a110",
+    "name": "Trần Ngọc Linh",
+    "email": "ngoclinh@example.com"
+  },
+  {
+    "id": "f7e87748-6256-4c0b-b4cb-738916b8b2f0",
+    "name": "Lê Hoàng Nam",
+    "email": "hoangnam@example.com"
+  },
+  {
+    "id": "0c2b7b29-7891-447a-adaf-c6f615b351c4",
+    "name": "Phu Nguyen",
+    "email": "nguyenvanphu5221@gmail.com"
+  },
+  {
+    "id": "14724e59-6b1f-4631-a5f2-2d8fb7da61d5",
+    "name": "Phu Nguyen",
+    "email": "nguyenvanphu52231@gmail.com"
+  }
+]

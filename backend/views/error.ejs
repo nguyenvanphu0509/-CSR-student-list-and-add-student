@@ -1,0 +1,4 @@
+<%# Template hiển thị lỗi 400, 413, 404 và 500. %>
+<%- include('partials/header', { title }) %>
+<main id="main-content" class="dashboard"><section class="panel error-panel"><p class="eyebrow">LỖI <%= status %></p><h1><%= title %></h1><p class="subtitle"><%= message %></p><a class="button button-primary" href="/csr">Về danh sách sinh viên</a></section></main>
+<%- include('partials/footer') %>

@@ -1,0 +1,7 @@
+<%# Các thông tin hồ sơ tùy chọn; chỉ họ tên và email có validation. %>
+<div class="optional-fields">
+  <div class="field"><label for="phone">Số điện thoại</label><input id="phone" name="phone" type="tel" autocomplete="tel" value="<%= form.phone ?? '' %>" placeholder="Ví dụ: 090 123 4567"></div>
+  <div class="field"><label for="dob">Ngày sinh</label><input id="dob" name="dob" type="date" autocomplete="bday" value="<%= form.dob ?? '' %>"></div>
+  <div class="field"><label for="className">Lớp học</label><input id="className" name="className" value="<%= form.className ?? '' %>" placeholder="Ví dụ: JavaScript 02"></div>
+  <div class="field"><label for="status">Trạng thái học tập</label><select id="status" name="status"><option value="studying" <%= form.status !== 'paused' ? 'selected' : '' %>>Đang học</option><option value="paused" <%= form.status === 'paused' ? 'selected' : '' %>>Nghỉ học</option></select></div>
+</div>

@@ -1,0 +1,80 @@
+<%# Template dashboard: tổng số sinh viên, bảng danh sách, form và các thông báo. %>
+<%- include('partials/header', { title: 'Quản lý sinh viên' }) %>
+<main id="main-content" class="dashboard">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-content">
+      <p class="hero-eyebrow"><span aria-hidden="true">✳</span> STUDENTSPACE / KHÔNG GIAN HỌC TẬP</p>
+      <h1 id="hero-title">Kết nối hôm nay.<br><span>Kiến tạo ngày mai.</span></h1>
+      <p class="hero-description">Một lớp học, nhiều tiềm năng. Quản lý sinh viên dễ dàng để dành nhiều thời gian hơn cho những điều quan trọng.</p>
+      <div class="hero-actions"><a class="button hero-button" href="#student-list">Khám phá lớp học <span aria-hidden="true">↗</span></a><a class="button hero-button-outline" href="#create-student">Thêm thành viên <span aria-hidden="true">＋</span></a></div>
+      <div class="hero-caption"><span class="hero-caption-line" aria-hidden="true"></span> Cùng học tập. Cùng tiến xa.</div>
+    </div>
+    <div class="hero-art" aria-hidden="true"><div class="art-grid"></div><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="hero-sphere"></div><div class="orbit-dot"></div><span class="art-spark spark-one">✳</span><span class="art-spark spark-two">＋</span><span class="art-coordinate">SPACE FOR<br>YOUR NEXT CHAPTER.</span><span class="art-marker">01 / ∞</span></div>
+  </section>
+  <div class="page-heading">
+    <div><p class="eyebrow">TỔNG QUAN LỚP HỌC</p><h2 class="page-title">Sinh viên</h2><p class="subtitle">Một nơi để theo dõi và kết nối với sinh viên của bạn.</p></div>
+    <a class="button button-secondary" href="#create-student"><span aria-hidden="true">＋</span> Thêm sinh viên</a>
+  </div>
+
+  <% if (success) { %>
+    <div class="notice notice-success" role="status"><span aria-hidden="true">✓</span> <%= success %> Danh sách đã được cập nhật.</div>
+  <% } %>
+  <% if (Object.keys(errors).length) { %>
+    <div class="notice notice-error" role="alert">Chưa thể thêm sinh viên. Vui lòng kiểm tra các thông tin bên dưới.</div>
+  <% } %>
+
+  <section class="summary-grid" aria-label="Tổng quan">
+    <div class="stat-card"><div><p class="stat-label">Tổng số sinh viên</p><p class="stat-number"><b><%= total %></b><span> sinh viên</span></p></div><span class="stat-icon" aria-hidden="true">↗</span></div>
+    <div class="intro-card"><span class="intro-icon" aria-hidden="true">✦</span><div><h2>Mỗi kết nối, một khởi đầu.</h2><p>Thêm sinh viên mới để cùng xây dựng lớp học của bạn.</p></div></div>
+  </section>
+
+  <div class="content-grid">
+    <section class="panel student-panel" id="student-list" aria-labelledby="list-title">
+      <div class="panel-heading"><div><h2 id="list-title">Danh sách sinh viên <span class="count-badge"><%= pagination.matched %></span></h2><p>Thông tin sinh viên trong lớp học của bạn.</p></div><span class="panel-tag"><%= filters.q ? "Kết quả tìm kiếm" : "Tất cả sinh viên" %></span></div>
+      <form class="list-filters" action="/students#student-list" method="get" role="search">
+        <div class="search-field"><label for="student-search">Tìm sinh viên</label><input id="student-search" name="q" type="search" value="<%= filters.q %>" maxlength="254" placeholder="Tên hoặc email, có thể nhập không dấu"></div>
+        <div><label for="student-sort">Sắp xếp</label><select id="student-sort" name="sort">
+          <% for (const [value, label] of [['original', 'Thứ tự thêm'], ['name-asc', 'Tên A–Z'], ['name-desc', 'Tên Z–A'], ['email-asc', 'Email A–Z'], ['email-desc', 'Email Z–A']]) { %>
+            <option value="<%= value %>" <%= filters.sort === value ? 'selected' : '' %>><%= label %></option>
+          <% } %>
+        </select></div>
+        <button class="button button-primary" type="submit">Áp dụng</button>
+        <a class="filter-reset" href="/students#student-list">Đặt lại</a>
+      </form>
+      <% if (!students.length) { %>
+        <% if (filters.q && total) { %>
+          <div class="empty-state"><h3>Không tìm thấy sinh viên</h3><p>Không có tên hoặc email khớp với “<%= filters.q %>”.</p><a href="/students#student-list">Xem tất cả sinh viên →</a></div>
+        <% } else { %>
+        <div class="empty-state"><span class="empty-icon" aria-hidden="true">＋</span><h3>Lớp học đang chờ thành viên đầu tiên</h3><p>Điền form để thêm một sinh viên vào danh sách.</p><a href="#create-student">Thêm sinh viên đầu tiên →</a></div>
+        <% } %>
+      <% } else { %>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="Bảng sinh viên, có thể cuộn ngang">
+          <table><caption class="sr-only">Danh sách sinh viên gồm số thứ tự, họ tên, email và thao tác.</caption><thead><tr><th scope="col" class="number-cell">STT</th><th scope="col">SINH VIÊN</th><th scope="col">EMAIL</th><th scope="col" class="actions-cell">THAO TÁC</th></tr></thead><tbody>
+            <% students.forEach((student, index) => { %>
+              <tr data-student-id="<%= student.id %>" data-email="<%= student.email %>" style="--row-index: <%= Math.min(index, 8) %>"><td class="number-cell"><%= String(pagination.offset + index + 1).padStart(2, '0') %></td><td><div class="student-identity"><span class="avatar avatar-<%= index % 3 %>" aria-hidden="true"><%= student.name.split(/\s+/).map(word => word[0]).slice(-2).join('').toUpperCase() %></span><a class="student-name" href="<%= detailURL(student.id) %>"><span class="student-name-label"><%= student.name %></span><small class="student-code"><%= formatStudentId(student.id) %><% if (student.className) { %> · <%= student.className %><% } %></small></a><form class="inline-name-form" data-student-validation novalidate hidden><input name="name" value="<%= student.name %>" maxlength="120" aria-label="Tên sinh viên" required><div class="inline-edit-actions"><button class="row-action" type="submit">Lưu</button><button class="row-action" type="button" data-action="cancel">Hủy</button></div></form></div><p class="inline-row-error field-error" hidden role="alert"></p></td><td class="email-cell"><%= student.email %></td><td class="actions-cell"><div class="row-actions"><button class="row-action" type="button" data-action="edit" aria-label="Sửa thông tin <%= student.name %>">Sửa</button><button class="row-action row-action-danger" type="button" data-action="delete" aria-label="Xóa sinh viên <%= student.name %>">Xóa</button></div></td></tr>
+            <% }); %>
+          </tbody></table>
+        </div>
+      <% } %>
+      <div class="table-footer"><div>Hiển thị <strong><%= students.length ? pagination.offset + 1 : 0 %>–<%= pagination.offset + students.length %></strong> / <strong><%= pagination.matched %></strong> kết quả · Tổng <%= total %> sinh viên</div></div>
+      <nav class="pagination" aria-label="Phân trang sinh viên">
+        <% if (pagination.page > 1) { %><a class="button button-secondary" href="<%= pageURL(pagination.page - 1) %>">← Trước</a><% } else { %><span class="pagination-disabled">← Trước</span><% } %>
+        <span aria-current="page">Trang <%= pagination.page %> / <%= pagination.pageCount %></span>
+        <% if (pagination.page < pagination.pageCount) { %><a class="button button-secondary" href="<%= pageURL(pagination.page + 1) %>">Sau →</a><% } else { %><span class="pagination-disabled">Sau →</span><% } %>
+      </nav>
+    </section>
+
+    <section class="panel form-panel" id="create-student" aria-labelledby="form-title">
+      <div class="form-heading"><span class="form-icon" aria-hidden="true">＋</span><h2 id="form-title">Thêm sinh viên</h2><p>Chào đón một thành viên mới vào lớp học.</p></div>
+      <form action="/students" method="post" data-student-validation novalidate>
+        <div class="field"><label for="name">Họ và tên <span class="required">*</span></label><input id="name" name="name" type="text" value="<%= form.name %>" maxlength="120" autocomplete="name" placeholder="Ví dụ: Nguyễn Minh An" required <% if (errors.name) { %>aria-invalid="true" aria-describedby="name-error"<% } %>><% if (errors.name) { %><p class="field-error" id="name-error"><%= errors.name %></p><% } %></div>
+        <div class="field"><label for="email">Địa chỉ email <span class="required">*</span></label><input id="email" name="email" type="email" value="<%= form.email %>" maxlength="254" autocomplete="email" placeholder="sinhvien@example.com" required aria-describedby="email-help<%= errors.email ? ' email-error' : '' %>" <% if (errors.email) { %>aria-invalid="true"<% } %>><p class="field-help" id="email-help">Mỗi sinh viên sử dụng một email riêng.</p><% if (errors.email) { %><p class="field-error" id="email-error"><%= errors.email %></p><% } %></div>
+        <%- include('partials/profile-fields', { form }) %>
+        <button type="submit" class="button button-primary"><span aria-hidden="true">＋</span> Thêm vào danh sách</button>
+        <p class="form-footnote">Các trường có dấu <span class="required">*</span> là bắt buộc.</p>
+      </form>
+    </section>
+  </div>
+</main>
+<div class="action-toast" role="status" aria-live="polite" hidden></div>
+<%- include('partials/footer') %>

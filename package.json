@@ -1,0 +1,22 @@
+{
+  "name": "students-ssr",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Student List CSR bằng HTML, CSS, JavaScript thuần; Express API và bản SSR đối chiếu",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node --watch backend/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "ejs": "^7.0.1",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.2"
+  }
+}

@@ -1,0 +1,8 @@
+<% const labels = { created: 'Thêm hồ sơ', updated: 'Cập nhật hồ sơ', deleted: 'Chuyển vào thùng rác', restored: 'Khôi phục hồ sơ' }; const fieldLabels = { name: 'họ tên', email: 'email', studentCode: 'mã sinh viên', phone: 'điện thoại', dob: 'ngày sinh', className: 'lớp', status: 'trạng thái' }; %>
+<% if (!events.length) { %><div class="history-empty"><span aria-hidden="true">↺</span><p>Chưa có thay đổi nào được ghi nhận.</p></div><% } else { %>
+  <ol class="activity-list">
+    <% for (const event of events) { %>
+      <li><span class="activity-dot activity-<%= event.action %>" aria-hidden="true"><%= event.action === 'created' ? '+' : event.action === 'restored' ? '↺' : event.action === 'deleted' ? '−' : '↗' %></span><div class="activity-description"><strong><%= labels[event.action] %></strong><% if (!compact) { %><p><% if (!event.deleted) { %><a href="/students/<%= encodeURIComponent(event.studentId) %>"><%= event.name %></a><% } else { %><a href="/trash"><%= event.name %></a><% } %> <span class="muted"><%= formatStudentId(event.studentId) %></span></p><% } %><% if (event.fields.length) { %><p class="muted">Đã sửa: <%= event.fields.map(key => fieldLabels[key]).join(', ') %></p><% } %></div><time datetime="<%= event.at %>"><%= formatTime(event.at) %></time></li>
+    <% } %>
+  </ol>
+<% } %>

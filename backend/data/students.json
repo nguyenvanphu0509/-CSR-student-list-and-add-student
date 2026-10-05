@@ -1,0 +1,254 @@
+[
+  {
+    "studentCode": "SV001",
+    "phone": "",
+    "dob": "",
+    "className": "",
+    "status": "studying",
+    "createdAt": null,
+    "updatedAt": null,
+    "deletedAt": null,
+    "activity": [],
+    "id": "001",
+    "name": "Nguyễn Minh An",
+    "email": "minhan@example.com",
+    "legacyId": "051be957-8905-4cdd-bf41-60e078d89862"
+  },
+  {
+    "studentCode": "SV002",
+    "phone": "",
+    "dob": "",
+    "className": "",
+    "status": "studying",
+    "createdAt": null,
+    "updatedAt": null,
+    "deletedAt": null,
+    "activity": [],
+    "id": "002",
+    "name": "Trần Ngọc Linh",
+    "email": "ngoclinh@example.com",
+    "legacyId": "526175b3-7884-4275-bf14-a3c5d646a110"
+  },
+  {
+    "studentCode": "SV003",
+    "phone": "",
+    "dob": "",
+    "className": "",
+    "status": "studying",
+    "createdAt": null,
+    "updatedAt": null,
+    "deletedAt": null,
+    "activity": [],
+    "id": "003",
+    "name": "Lê Hoàng Nam",
+    "email": "hoangnam@example.com",
+    "legacyId": "f7e87748-6256-4c0b-b4cb-738916b8b2f0"
+  },
+  {
+    "studentCode": "SV004",
+    "phone": "",
+    "dob": "",
+    "className": "",
+    "status": "studying",
+    "createdAt": null,
+    "updatedAt": "2026-10-05T05:55:27.563Z",
+    "deletedAt": "2026-10-05T05:55:27.563Z",
+    "activity": [
+      {
+        "id": "9edc006a-ab21-48b8-a80d-e162bd3e2725",
+        "action": "deleted",
+        "at": "2026-10-05T05:55:27.563Z",
+        "name": "Phu Nguyen",
+        "fields": []
+      }
+    ],
+    "id": "004",
+    "name": "Phu Nguyen",
+    "email": "nguyenvanphu5221@gmail.com",
+    "legacyId": "0c2b7b29-7891-447a-adaf-c6f615b351c4"
+  },
+  {
+    "studentCode": "SV005",
+    "phone": "",
+    "dob": "",
+    "className": "",
+    "status": "studying",
+    "createdAt": null,
+    "updatedAt": "2026-10-05T06:03:27.244Z",
+    "deletedAt": null,
+    "activity": [
+      {
+        "id": "d317ecae-990b-4c02-990e-202e20b47167",
+        "action": "deleted",
+        "at": "2026-10-05T06:03:15.067Z",
+        "name": "Phu Nguyen",
+        "fields": []
+      },
+      {
+        "id": "964750a7-4acb-4300-9fea-9ca82b424373",
+        "action": "restored",
+        "at": "2026-10-05T06:03:27.244Z",
+        "name": "Phu Nguyen",
+        "fields": []
+      }
+    ],
+    "id": "005",
+    "name": "Phu Nguyen",
+    "email": "nguyenvanphu52231@gmail.com",
+    "legacyId": "14724e59-6b1f-4631-a5f2-2d8fb7da61d5"
+  },
+  {
+    "studentCode": "SV006",
+    "phone": "0899721059",
+    "dob": "2026-10-21",
+    "className": "web developer",
+    "status": "studying",
+    "createdAt": "2026-10-05T06:04:26.773Z",
+    "updatedAt": "2026-10-05T06:04:26.773Z",
+    "deletedAt": null,
+    "activity": [
+      {
+        "id": "e6bd5b31-1def-4ca0-8aba-0fc9f0750022",
+        "action": "created",
+        "at": "2026-10-05T06:04:26.773Z",
+        "name": "ngo thi loan",
+        "fields": []
+      }
+    ],
+    "name": "ngo thi loan",
+    "email": "loanngo@gmail.com",
+    "id": "006"
+  },
+  {
+    "studentCode": "SV007",
+    "phone": "",
+    "dob": "",
+    "className": "",
+    "status": "studying",
+    "createdAt": "2026-10-05T06:08:42.304Z",
+    "updatedAt": "2026-10-05T06:08:42.304Z",
+    "deletedAt": null,
+    "activity": [
+      {
+        "id": "38da5ad6-fff9-4f70-acd2-fdeeb390f941",
+        "action": "created",
+        "at": "2026-10-05T06:08:42.304Z",
+        "name": "Phu Nguyen adsfad",
+        "fields": []
+      }
+    ],
+    "name": "Phu Nguyen adsfad",
+    "email": "nguyenvanphu52221@gmail.com",
+    "id": "007"
+  },
+  {
+    "studentCode": "SV008",
+    "phone": "",
+    "dob": "",
+    "className": "",
+    "status": "studying",
+    "createdAt": "2026-10-05T06:08:59.557Z",
+    "updatedAt": "2026-10-05T06:08:59.557Z",
+    "deletedAt": null,
+    "activity": [
+      {
+        "id": "86a875be-a1f9-4cbb-aca8-08f2e32a15b9",
+        "action": "created",
+        "at": "2026-10-05T06:08:59.557Z",
+        "name": "phong nguyen",
+        "fields": []
+      }
+    ],
+    "name": "phong nguyen",
+    "email": "nguyenvanphu52321@gmail.com",
+    "id": "008"
+  },
+  {
+    "studentCode": "SV009",
+    "phone": "",
+    "dob": "",
+    "className": "",
+    "status": "studying",
+    "createdAt": "2026-10-05T06:15:15.693Z",
+    "updatedAt": "2026-10-05T06:15:15.693Z",
+    "deletedAt": null,
+    "activity": [
+      {
+        "id": "2d7190ec-5a45-43fe-940f-5f4b25937c4b",
+        "action": "created",
+        "at": "2026-10-05T06:15:15.693Z",
+        "name": "phong Nguyen",
+        "fields": []
+      }
+    ],
+    "name": "phong Nguyen",
+    "email": "nguyenvanphong@gmail.com",
+    "id": "009"
+  },
+  {
+    "studentCode": "SV010",
+    "phone": "",
+    "dob": "",
+    "className": "",
+    "status": "studying",
+    "createdAt": "2026-10-05T06:15:32.373Z",
+    "updatedAt": "2026-10-05T06:15:32.373Z",
+    "deletedAt": null,
+    "activity": [
+      {
+        "id": "4e9bffa5-eb29-4bda-80ad-5c44aca04342",
+        "action": "created",
+        "at": "2026-10-05T06:15:32.373Z",
+        "name": "doan gnuyen",
+        "fields": []
+      }
+    ],
+    "name": "doan gnuyen",
+    "email": "doannguyen@gmail.com",
+    "id": "010"
+  },
+  {
+    "studentCode": "SV011",
+    "phone": "",
+    "dob": "",
+    "className": "",
+    "status": "studying",
+    "createdAt": "2026-10-05T06:15:51.495Z",
+    "updatedAt": "2026-10-05T06:15:51.495Z",
+    "deletedAt": null,
+    "activity": [
+      {
+        "id": "d257b065-e95e-40fa-a90b-b3ea330d74c4",
+        "action": "created",
+        "at": "2026-10-05T06:15:51.495Z",
+        "name": "sdhaijfhjahs",
+        "fields": []
+      }
+    ],
+    "name": "sdhaijfhjahs",
+    "email": "nguyenvanphu21@gmail.com",
+    "id": "011"
+  },
+  {
+    "studentCode": "SV012",
+    "phone": "",
+    "dob": "",
+    "className": "",
+    "status": "studying",
+    "createdAt": "2026-10-05T06:16:08.235Z",
+    "updatedAt": "2026-10-05T06:16:08.235Z",
+    "deletedAt": null,
+    "activity": [
+      {
+        "id": "c3b30d24-2530-46c5-98a6-cf9b1be92fa2",
+        "action": "created",
+        "at": "2026-10-05T06:16:08.235Z",
+        "name": "jkasfjkda",
+        "fields": []
+      }
+    ],
+    "name": "jkasfjkda",
+    "email": "nguyendbfadhjd@gmail.com",
+    "id": "012"
+  }
+]

@@ -1,0 +1,18 @@
+<%# Header dùng chung cho các trang: khai báo HTML, tiêu đề, CSS và thanh điều hướng. %>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title><%= title %> · StudentSpace</title>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body class="<%= currentPath === '/' ? 'welcome-body' : '' %>">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/students"><span class="brand-icon bubble" aria-hidden="true">S<span>·</span></span>StudentSpace</a>
+      <nav aria-label="Điều hướng chính"><a class="nav-link" href="/students" <%= currentPath.startsWith('/students') ? 'aria-current=page' : '' %>>Danh sách</a><a class="nav-link nav-create" href="/trash" <%= currentPath === '/trash' ? 'aria-current=page' : '' %>>Thùng rác</a><a class="nav-link nav-create" href="/activity" <%= currentPath === '/activity' ? 'aria-current=page' : '' %>>Lịch sử</a></nav>
+      <span class="workspace-label"><span class="status-dot" aria-hidden="true"></span> Không gian học tập</span>
+    </div>
+  </header>

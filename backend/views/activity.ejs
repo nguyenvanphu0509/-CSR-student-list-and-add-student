@@ -1,0 +1,6 @@
+<%- include('partials/header', { title: 'Lịch sử thay đổi' }) %>
+<main id="main-content" class="dashboard">
+  <div class="page-heading"><div><p class="eyebrow">THEO DÕI THAY ĐỔI</p><h1>Lịch sử hoạt động</h1><p class="subtitle">Thêm, cập nhật, chuyển vào thùng rác và khôi phục hồ sơ.</p></div><span class="panel-tag"><%= events.length %> hoạt động · Giờ Việt Nam</span></div>
+  <section class="panel archive-panel"><%- include('partials/activity-list', { events, compact: false }) %></section>
+</main>
+<%- include('partials/footer') %>

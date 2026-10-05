@@ -1,0 +1,35 @@
+<%- include('partials/header', { title: 'Hồ sơ · ' + student.name }) %>
+<main id="main-content" class="dashboard profile-dashboard">
+  <div class="profile-breadcrumb"><a href="<%= backURL %>">Sinh viên</a><span>/</span><span>Hồ sơ <%= formatStudentId(student.id) %></span></div>
+  <section class="profile-cover">
+    <div><p class="eyebrow">STUDENTSPACE / HỒ SƠ THÀNH VIÊN</p><h1>Mỗi thành viên,<br>một câu chuyện.</h1></div>
+    <span class="profile-cover-art" aria-hidden="true">✳</span><span class="profile-cover-id"><%= formatStudentId(student.id) %></span>
+  </section>
+  <div class="profile-layout">
+    <aside class="panel profile-card">
+      <div class="profile-avatar" aria-hidden="true"><%= student.name.split(/\s+/).map(word => word[0]).slice(-2).join('').toUpperCase() %></div>
+      <span class="status-pill <%= student.status === 'paused' ? 'status-paused' : '' %>"><span></span><%= student.status === 'paused' ? 'Nghỉ học' : 'Đang học' %></span>
+      <h2><%= student.name %></h2><p class="profile-email"><%= student.email %></p>
+      <div class="profile-meta"><div><span>Mã sinh viên</span><strong><%= formatStudentId(student.id) %></strong></div><div><span>Lớp học</span><strong><%= student.className || 'Chưa cập nhật' %></strong></div></div>
+      <a class="button button-primary" href="/students/<%= encodeURIComponent(student.id) %>/edit">Chỉnh sửa hồ sơ <span aria-hidden="true">↗</span></a>
+      <a class="profile-trash-link" href="/students/<%= encodeURIComponent(student.id) %>/delete">Chuyển vào thùng rác</a>
+    </aside>
+    <div class="profile-content">
+      <section class="panel profile-information">
+        <div class="profile-section-heading"><div><p class="eyebrow">01 / THÔNG TIN</p><h2>Thông tin cá nhân</h2></div><span class="profile-section-icon" aria-hidden="true">↗</span></div>
+        <dl class="profile-details-grid">
+          <% for (const [label, value] of [['Họ và tên', student.name], ['Email', student.email], ['Số điện thoại', student.phone], ['Ngày sinh', formatDate(student.dob)], ['Lớp học', student.className]]) { %>
+            <div><dt><%= label %></dt><dd><%= value || 'Chưa cập nhật' %></dd></div>
+          <% } %>
+        </dl>
+      </section>
+      <section class="panel profile-information">
+        <div class="profile-section-heading"><div><p class="eyebrow">02 / HOẠT ĐỘNG</p><h2>Lịch sử hồ sơ</h2></div><a href="/activity">Xem tất cả →</a></div>
+        <div class="profile-timestamps"><span>Tạo hồ sơ <strong><%= formatTime(student.createdAt) %></strong></span><span>Cập nhật gần nhất <strong><%= formatTime(student.updatedAt) %></strong></span></div>
+        <%- include('partials/activity-list', { events: student.activity.slice(-5).reverse().map(event => ({ ...event, studentId: student.id, deleted: false })), compact: true }) %>
+      </section>
+    </div>
+  </div>
+  <a class="back-link profile-bottom-back" href="<%= backURL %>">← Trở lại danh sách</a>
+</main>
+<%- include('partials/footer') %>

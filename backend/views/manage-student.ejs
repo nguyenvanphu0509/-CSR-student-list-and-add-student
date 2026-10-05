@@ -1,0 +1,21 @@
+<%- include('partials/header', { title: mode === 'edit' ? 'Sửa sinh viên' : 'Xóa sinh viên' }) %>
+<main id="main-content" class="dashboard manage-dashboard">
+  <a class="back-link" href="/students#student-list">← Trở lại danh sách</a>
+  <section class="panel manage-panel" aria-labelledby="manage-title">
+    <div class="manage-heading"><span class="form-icon <%= mode === 'delete' ? 'danger-icon' : '' %>" aria-hidden="true"><%= mode === 'edit' ? '↗' : '−' %></span><p class="eyebrow">QUẢN LÝ THÀNH VIÊN</p><h1 id="manage-title"><%= mode === 'edit' ? 'Cập nhật sinh viên' : 'Chuyển vào thùng rác?' %></h1><p class="subtitle"><%= mode === 'edit' ? 'Cập nhật thông tin để lớp học luôn được kết nối.' : 'Kiểm tra thông tin trước khi xác nhận xóa khỏi lớp học.' %></p></div>
+    <% if (Object.keys(errors).length) { %><div class="notice notice-error" role="alert">Thông tin chưa hợp lệ. Vui lòng kiểm tra lại các trường bên dưới.</div><% } %>
+    <form action="/students/<%= encodeURIComponent(student.id) %>" method="post" <% if (mode === 'edit') { %>data-student-validation<% } else { %>data-confirm-delete<% } %> novalidate>
+      <input type="hidden" name="_method" value="<%= mode === 'edit' ? 'PUT' : 'DELETE' %>">
+      <% if (mode === 'edit') { %>
+        <div class="field"><label for="name">Họ và tên <span class="required">*</span></label><input id="name" name="name" value="<%= form.name %>" maxlength="120" autocomplete="name" required <% if (errors.name) { %>aria-invalid="true" aria-describedby="name-error"<% } %>><% if (errors.name) { %><p class="field-error" id="name-error"><%= errors.name %></p><% } %></div>
+        <div class="field"><label for="email">Địa chỉ email <span class="required">*</span></label><input id="email" name="email" type="email" value="<%= form.email %>" maxlength="254" autocomplete="email" required <% if (errors.email) { %>aria-invalid="true" aria-describedby="email-error"<% } %>><% if (errors.email) { %><p class="field-error" id="email-error"><%= errors.email %></p><% } %></div>
+        <%- include('partials/profile-fields', { form }) %>
+      <% } else { %>
+        <div class="delete-summary"><span class="avatar avatar-0" aria-hidden="true"><%= student.name.split(/\s+/).map(word => word[0]).slice(-2).join('').toUpperCase() %></span><div><strong><%= student.name %></strong><p><%= student.email %></p></div></div>
+        <p class="delete-warning">Hồ sơ sẽ được chuyển vào thùng rác. Bạn có thể khôi phục từ trang Thùng rác.</p>
+      <% } %>
+      <div class="manage-actions"><a class="button button-secondary" href="/students#student-list">Hủy</a><button class="button <%= mode === 'edit' ? 'button-primary' : 'button-danger' %>" type="submit"><%= mode === 'edit' ? 'Lưu thay đổi' : 'Chuyển vào thùng rác' %> <span aria-hidden="true">↗</span></button></div>
+    </form>
+  </section>
+</main>
+<%- include('partials/footer') %>
