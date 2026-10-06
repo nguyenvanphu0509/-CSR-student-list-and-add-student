@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import { once } from 'node:events';
 import { createApp } from '../backend/app.js';
 
-async function fixture(t, seed = [{ id: '001', name: 'Nguyễn Minh An', email: 'an@example.com' }]) {
+async function fixture(t, seed = [{ id: '24127152', name: 'Nguyễn Văn Tiến Đạt', email: 'tiendat@example.com' }]) {
   const directory = await mkdtemp(join(tmpdir(), 'students-csr-'));
   const dataFile = join(directory, 'students.json');
   await writeFile(dataFile, JSON.stringify(seed));

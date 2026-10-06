@@ -2,9 +2,9 @@ import { StudentList } from './components/student-list.js';
 import { StudentForm } from './components/student-form.js';
 
 const initialStudents = [
-  { id: '001', name: 'Nguyễn Minh An', email: 'minhan@example.com' },
-  { id: '002', name: 'Trần Ngọc Linh', email: 'ngoclinh@example.com' },
-  { id: '003', name: 'Lê Hoàng Nam', email: 'hoangnam@example.com' },
+  { id: '24127152', name: 'Nguyễn Văn Tiến Đạt', email: 'tiendat@example.com' },
+  { id: '24127489', name: 'Nguyễn Văn Phú', email: 'vanphu@example.com' },
+  { id: '24127353', name: 'Nguyễn Vũ Duy', email: 'vuduy@example.com' },
 ];
 
 const normalize = value => value.normalize('NFD').replace(/\p{M}/gu, '').replace(/[đĐ]/g, 'd').toLocaleLowerCase('vi');
