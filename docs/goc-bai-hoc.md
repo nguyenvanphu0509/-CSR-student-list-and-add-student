@@ -5,6 +5,7 @@
 - **`StudentsApp`**: Sở hữu state chính của ứng dụng (danh sách sinh viên, giá trị form, trạng thái lọc/sắp xếp).
 - **`StudentList`**: Component con nhận danh sách sinh viên qua `props` để render DOM; không gọi API và không giữ state riêng.
 - **`StudentForm`**: Component con nhận giá trị input và callback từ component cha; đồng bộ dữ liệu người dùng nhập.
+- **Dữ liệu profile**: `phone`, `dob`, `className`, `status` là trường tùy chọn; `studentCode` được tạo từ ID. Timestamp, lịch sử và ID legacy là metadata, không do form nhập.
 
 ## 2. Luồng dữ liệu và Render (Data Flow)
 
@@ -12,6 +13,7 @@
 2. **Submit form**: 
    - Gọi `event.preventDefault()` để ngăn reload trang.
    - Tạo student mới ngay trong browser, không gửi request API.
+   - Validate ngày sinh và trạng thái, đồng thời giữ các trường profile tùy chọn trong state.
    - Cập nhật mảng `state.students` mới → render lại danh sách sinh viên.
    - Reset form sau khi cập nhật state thành công; reload trang sẽ khôi phục seed ban đầu.
 3. **Debug & Kiểm tra**:

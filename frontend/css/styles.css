@@ -532,11 +532,18 @@ select:focus-visible { outline: 3px solid #7292fa; outline-offset: 4px; }
 .render-comparison th { letter-spacing: 0; font-size: 11px; }
 .csr-body tbody tr { animation: csr-row-in 180ms ease-out both; }
 .csr-body .student-name { min-width: 0; }
+.csr-body .profile-cell { min-width: 170px; font-size: 11px; line-height: 1.8; }
+.csr-body .profile-detail { display: block; overflow-wrap: anywhere; }
+.csr-body .profile-cell .status-pill { margin-top: 5px; }
 .csr-body button:disabled { opacity: .55; cursor: wait; transform: none; }
 .csr-body #submit-error { margin-bottom: 12px; }
 @keyframes csr-row-in { from { opacity: .25; } to { opacity: 1; } }
 @media (max-width: 520px) {
   .csr-body .table-scroll table { table-layout: auto; }
+  .csr-body .topbar-inner { flex-wrap: wrap; justify-content: flex-start; }
+  .csr-body .topbar nav { width: 100%; justify-content: space-between; gap: 8px; }
+  .csr-body .nav-create { display: block; }
+  .csr-body .nav-link { font-size: 10px; padding: 12px 0; }
   .learning-notes { padding: 18px; }
   .render-comparison { table-layout: auto; }
   .render-comparison th, .render-comparison td { padding: 10px 6px; font-size: 10px; }

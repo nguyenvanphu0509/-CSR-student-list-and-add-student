@@ -11,16 +11,17 @@
 <body class="csr-body">
   <header class="topbar">
     <div class="topbar-inner">
-      <a class="brand" href="/csr"><span class="brand-icon" aria-hidden="true">S<span>·</span></span>StudentSpace</a>
+      <a class="brand" href="#student-list"><span class="brand-icon bubble" aria-hidden="true">S<span>·</span></span>StudentSpace</a>
       <nav aria-label="Điều hướng chính">
-        <a class="nav-link" href="/students">Danh sách</a>
-        <a class="nav-link nav-create" href="/trash">Thùng rác</a>
-        <a class="nav-link nav-create" href="/activity">Lịch sử</a>
+        <a class="nav-link" href="#student-list" data-csr-nav="students">Danh sách</a>
+        <a class="nav-link nav-create" href="#trash" data-csr-nav="trash">Thùng rác</a>
+        <a class="nav-link nav-create" href="#activity" data-csr-nav="activity">Lịch sử</a>
       </nav>
       <span class="workspace-label"><span class="status-dot" aria-hidden="true"></span> Không gian học tập</span>
     </div>
   </header>
   <main class="dashboard" id="students-app">
+    <div data-csr-view="students">
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-content">
         <p class="hero-eyebrow"><span aria-hidden="true">✳</span> STUDENTSPACE / KHÔNG GIAN HỌC TẬP</p>
@@ -33,7 +34,7 @@
     </section>
     <div class="page-heading"><div><p class="eyebrow">TỔNG QUAN LỚP HỌC</p><h2 class="page-title">Sinh viên</h2><p class="subtitle">Theo dõi danh sách và chào đón những thành viên mới.</p></div><a class="button button-secondary" href="#create-student">＋ Thêm sinh viên</a></div>
     <aside class="notice rendering-note"><strong>CSR Student List</strong> · Danh sách được tạo từ state trong browser. Thêm sinh viên cập nhật ngay, không gọi API và không reload trang. <a href="/students">So sánh bản SSR →</a></aside>
-    <noscript><div class="notice notice-error">Bản CSR cần JavaScript để dựng danh sách. <a href="/students">Mở bản SSR hoạt động không cần JavaScript.</a></div></noscript>
+    <noscript><div class="notice notice-error">Bản CSR cần bật JavaScript để hiển thị danh sách.</div></noscript>
     <p id="app-notice" class="notice notice-success" role="status" aria-live="polite" hidden></p>
     <section class="summary-grid" aria-label="Tổng quan">
       <div class="stat-card"><div><p class="stat-label">Tổng số sinh viên</p><p class="stat-number"><b id="student-total">—</b><span> sinh viên</span></p></div><span class="stat-icon" aria-hidden="true">↗</span></div>
@@ -55,6 +56,15 @@
         <div id="student-form-content"></div>
       </section>
     </div>
+    </div>
+    <section class="csr-local-view" id="trash" data-csr-view="trash" aria-labelledby="trash-title" hidden>
+      <div class="page-heading"><div><p class="eyebrow">QUẢN LÝ HỒ SƠ</p><h1 id="trash-title">Thùng rác <span class="count-badge" id="trash-count">0</span></h1><p class="subtitle">Hồ sơ CSR được giữ lại để bạn có thể khôi phục.</p></div></div>
+      <section class="panel archive-panel"><div id="trash-content"></div></section>
+    </section>
+    <section class="csr-local-view" id="activity" data-csr-view="activity" aria-labelledby="activity-title" hidden>
+      <div class="page-heading"><div><p class="eyebrow">THEO DÕI THAY ĐỔI</p><h1 id="activity-title">Lịch sử hoạt động</h1><p class="subtitle">Các thao tác thêm, chuyển vào thùng rác và khôi phục trong phiên CSR này.</p></div><span class="panel-tag"><span id="activity-count">0</span> hoạt động · Giờ Việt Nam</span></div>
+      <section class="panel archive-panel"><div id="activity-content"></div></section>
+    </section>
   </main>
   <footer class="footer"><span>StudentSpace</span><span>Cùng học tập. Cùng tiến xa.</span></footer>
 </body>

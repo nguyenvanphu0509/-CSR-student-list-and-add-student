@@ -7,7 +7,7 @@ function cell(value, className = '') {
   return node;
 }
 
-export function StudentList({ students, total, filtered }) {
+export function StudentList({ students, total, filtered, onDelete }) {
   const content = document.createElement('div');
   if (!students.length) {
     const empty = document.createElement('div');
@@ -26,7 +26,7 @@ export function StudentList({ students, total, filtered }) {
   region.setAttribute('aria-label', 'Bảng sinh viên, có thể cuộn ngang');
   const table = document.createElement('table');
   // Chỉ markup tĩnh đi qua innerHTML. Dữ liệu người dùng dùng textContent bên dưới.
-  table.innerHTML = '<caption class="sr-only">Danh sách sinh viên gồm số thứ tự, họ tên và email.</caption><thead><tr><th scope="col" class="number-cell">STT</th><th scope="col">SINH VIÊN</th><th scope="col">EMAIL</th></tr></thead>';
+  table.innerHTML = '<caption class="sr-only">Danh sách sinh viên gồm số thứ tự, họ tên, email, thông tin hồ sơ và thao tác.</caption><thead><tr><th scope="col" class="number-cell">STT</th><th scope="col">SINH VIÊN</th><th scope="col">EMAIL</th><th scope="col">HỒ SƠ</th><th scope="col" class="actions-cell">THAO TÁC</th></tr></thead>';
   const body = document.createElement('tbody');
   students.forEach((student, index) => {
     const row = document.createElement('tr');
@@ -44,11 +44,29 @@ export function StudentList({ students, total, filtered }) {
     name.textContent = student.name;
     const code = document.createElement('small');
     code.className = 'student-code';
-    code.textContent = `SV${student.id}${student.className ? ` · ${student.className}` : ''}`;
+    code.textContent = student.studentCode || `SV${student.id}`;
     name.append(code);
     identity.append(avatar, name);
     identityCell.append(identity);
-    row.append(identityCell, cell(student.email, 'email-cell'));
+    const profile = cell('', 'profile-cell');
+    const details = [student.className && `Lớp: ${student.className}`, student.phone && `SĐT: ${student.phone}`, student.dob && `Ngày sinh: ${student.dob}`]
+      .filter(Boolean);
+    const detailText = document.createElement('small');
+    detailText.className = 'profile-detail';
+    detailText.textContent = details.join(' · ') || 'Chưa bổ sung';
+    const status = document.createElement('small');
+    status.className = `status-pill${student.status === 'paused' ? ' status-paused' : ''}`;
+    status.textContent = student.status === 'paused' ? 'Nghỉ học' : 'Đang học';
+    profile.append(detailText, status);
+    const actions = cell('', 'actions-cell');
+    const remove = document.createElement('button');
+    remove.className = 'row-action row-action-danger';
+    remove.type = 'button';
+    remove.textContent = 'Xóa';
+    remove.setAttribute('aria-label', `Chuyển ${student.name} vào thùng rác CSR`);
+    remove.addEventListener('click', () => onDelete(student.id));
+    actions.append(remove);
+    row.append(identityCell, cell(student.email, 'email-cell'), profile, actions);
     body.append(row);
   });
   table.append(body);

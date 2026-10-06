@@ -1,6 +1,6 @@
 # StudentSpace · Vanilla JavaScript + Express
 
-Bài tập **Browser tự tạo và cập nhật UI**: Student List CSR có state, component và form thêm sinh viên không reload. CSR dùng seed data và cập nhật state ngay trong browser, không gọi API hay database. Frontend dùng HTML, CSS, JavaScript thuần; Node.js + Express phục vụ trang và giữ các chức năng SSR/API riêng.
+Bài tập **Browser tự tạo và cập nhật UI**: Student List CSR có state, component, form thêm sinh viên và các view Thùng rác/Lịch sử không reload. CSR dùng seed data và cập nhật state ngay trong browser, không gọi API hay database. Frontend dùng HTML, CSS, JavaScript thuần; Node.js + Express phục vụ trang và giữ các chức năng SSR/API riêng.
 
 Project tách thành hai thư mục rõ ràng: `frontend/` chứa code chạy trong browser; `backend/` chứa Express, API, dữ liệu JSON và template SSR. Một `package.json` ở gốc quản lý lệnh chạy và dependencies. Frontend thuần không cần cài package riêng: Express phục vụ các file frontend và API trên cùng cổng.
 
@@ -26,11 +26,13 @@ Nếu cổng bận: `PORT=3001 npm run dev`. Server lắng nghe trên `127.0.0.1
 | Yêu cầu | Cách triển khai |
 | --- | --- |
 | Browser tự tạo UI | HTML khung ở `frontend/index.html`; StudentList dựng DOM từ state cục bộ |
-| State | StudentsApp.state: seed students, form, errors, submitting, query, sort |
-| Component và props | StudentsApp truyền dữ liệu/callback xuống StudentList và StudentForm |
+| State | StudentsApp.state: students, trash, activity, view, form, errors, query, sort |
+| Component và props | StudentsApp truyền dữ liệu/callback xuống StudentList và StudentForm; render Trash/Activity từ state |
 | Input có kiểm soát | Event input cập nhật state.form; StudentForm.update() đồng bộ state → input |
 | Thêm không reload | preventDefault() → validate → tạo student trong browser → cập nhật state và render |
 | Dòng mới hiện ngay | Thêm vào state, reset bộ lọc/form; không gửi request mạng |
+| Trường hồ sơ | phone, dob, className, status nằm trong state; studentCode được tạo từ ID |
+| Điều hướng CSR | Danh sách, Thùng rác, Lịch sử dùng hash view; chỉ “So sánh bản SSR” mở `/students` |
 | Quan sát state | DevTools Console: getStudentState() trả bản sao state |
 | SSR vs CSR | /students trả HTML có sẵn dữ liệu; /csr dựng danh sách từ seed trong state browser |
 
@@ -38,7 +40,7 @@ Luồng dữ liệu một chiều:
 
 ```text
 StudentsApp (state owner)
-├── StudentList({ students, total, filtered })
+├── StudentList({ students, total, filtered, onDelete })
 └── StudentForm({ onInput, onSubmit })
     └── update({ values, errors, submitting, ready, error })
 
@@ -78,7 +80,7 @@ test/                                  API, DOM CSR, SSR và validation tests
 docs/README.md                         Hướng dẫn demo và bằng chứng nộp bài
 ```
 
-`GET /csr` phục vụ `frontend/index.html`. Các asset ở `/assets/css/` và `/assets/js/` được Express phục vụ từ `frontend/`. CSR không gọi `/api/students`; thao tác thêm chỉ cập nhật state trong browser. Thư mục `backend/` và dữ liệu JSON không được phục vụ như file tĩnh.
+`GET /csr` phục vụ `frontend/index.html`. Các asset ở `/assets/css/` và `/assets/js/` được Express phục vụ từ `frontend/`. CSR không gọi `/api/students`; thêm, chuyển vào thùng rác, khôi phục, lịch sử và điều hướng view đều chạy từ state trong browser. Trong menu CSR, chỉ “So sánh bản SSR” mở `/students`. Thư mục `backend/` và dữ liệu JSON không được phục vụ như file tĩnh.
 
 ## API
 
@@ -100,9 +102,9 @@ Tên/email hiển thị qua `textContent`; `innerHTML` trong component chỉ ch�
 
 ## Dữ liệu và các chức năng đã có
 
-CSR dùng seed data giả lập trong `frontend/js/app.js`; dữ liệu thêm chỉ tồn tại trong state và trở về seed ban đầu khi reload. SSR và API riêng vẫn dùng `backend/data/students.json`; các field hồ sơ phụ và lịch sử hiện có được giữ nguyên. JSON được ghi qua file tạm rồi rename, hàng đợi tuần tự hóa ghi trong một tiến trình.
+CSR dùng seed data trong `frontend/js/app.js`; thêm/xóa/khôi phục và activity chỉ tồn tại trong state của phiên browser, trở về seed ban đầu khi reload. Các view CSR dùng cùng bố cục/class CSS với trang SSR nhưng không dùng chung dữ liệu. SSR và API riêng vẫn dùng `backend/data/students.json`; các field hồ sơ phụ và lịch sử hiện có được giữ nguyên.
 
-Form CSR tập trung vào name và email theo bài học. Tìm kiếm và sắp xếp chạy từ state trong browser. Các chức năng sửa, xóa mềm, khôi phục, lịch sử và phân trang SSR vẫn có ở các trang cũ. Chuyển giữa trang CSR/SSR là điều hướng thông thường; tiêu chí không reload áp dụng cho submit Add Student trên CSR.
+Form CSR có name/email bắt buộc và phone/dob/className/status tùy chọn. Ngày sinh được kiểm tra định dạng ngày thật; status chỉ nhận `studying` hoặc `paused`; `studentCode` tự sinh từ ID. Tìm kiếm và sắp xếp chạy từ state trong browser. SSR vẫn có các chức năng riêng như sửa hồ sơ, phân trang, thùng rác và lịch sử bền vững; dữ liệu hai phiên bản không đồng bộ.
 
 ## Kiểm tra
 
@@ -110,6 +112,6 @@ Form CSR tập trung vào name và email theo bài học. Tìm kiếm và sắp 
 npm test
 ```
 
-Tests dùng JSON trong thư mục tạm, không ghi vào dữ liệu thật. Bao gồm SSR/CRUD và API JSON, cùng mô phỏng DOM CSR: seed ban đầu, input → state, submit không điều hướng hay gọi mạng, dòng mới, ID kế tiếp, reset form/bộ lọc, email trùng và hiển thị dữ liệu có ký tự HTML an toàn.
+Tests dùng JSON trong thư mục tạm, không ghi vào dữ liệu thật. Bao gồm SSR/CRUD và API JSON, cùng mô phỏng DOM CSR: seed/profile, validation, điều hướng ba view bằng hash, thêm/xóa/khôi phục, activity, không tải lại document hay gọi mạng và hiển thị dữ liệu an toàn.
 
 Xem [hướng dẫn demo](docs/README.md) để ghi hình thao tác, chụp Network và giải thích state owner.
