@@ -51,13 +51,20 @@
     "className": "",
     "status": "studying",
     "createdAt": null,
-    "updatedAt": "2026-10-05T05:55:27.563Z",
-    "deletedAt": "2026-10-05T05:55:27.563Z",
+    "updatedAt": "2026-10-06T07:46:58.627Z",
+    "deletedAt": null,
     "activity": [
       {
         "id": "9edc006a-ab21-48b8-a80d-e162bd3e2725",
         "action": "deleted",
         "at": "2026-10-05T05:55:27.563Z",
+        "name": "Phu Nguyen",
+        "fields": []
+      },
+      {
+        "id": "a8b46194-9c9d-4e89-8483-d917a61aa33b",
+        "action": "restored",
+        "at": "2026-10-06T07:46:58.627Z",
         "name": "Phu Nguyen",
         "fields": []
       }

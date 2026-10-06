@@ -1,9 +1,13 @@
-import { getStudents, createStudent } from './api.js';
 import { StudentList } from './components/student-list.js';
 import { StudentForm } from './components/student-form.js';
 
+const initialStudents = [
+  { id: '001', name: 'Nguyễn Minh An', email: 'minhan@example.com' },
+  { id: '002', name: 'Trần Ngọc Linh', email: 'ngoclinh@example.com' },
+  { id: '003', name: 'Lê Hoàng Nam', email: 'hoangnam@example.com' },
+];
+
 const normalize = value => value.normalize('NFD').replace(/\p{M}/gu, '').replace(/[đĐ]/g, 'd').toLocaleLowerCase('vi');
-const messageFor = error => error instanceof TypeError ? 'Không kết nối được server. Vui lòng thử lại.' : error.message;
 
 function validate({ name, email }) {
   const errors = {};
@@ -14,13 +18,14 @@ function validate({ name, email }) {
   return errors;
 }
 
-// State owner: component cha gọi API và truyền props/callback xuống hai component con.
+// State owner: component cha quản lý dữ liệu trong browser và truyền props/callback xuống component con.
 export class StudentsApp {
   constructor(root) {
     this.root = root;
     this.state = {
-      students: [], form: { name: '', email: '' }, errors: {},
-      loading: true, loaded: false, submitting: false, loadError: '', submitError: '', notice: '',
+      students: initialStudents.map(student => ({ ...student })),
+      form: { name: '', email: '' }, errors: {},
+      submitting: false, submitError: '', notice: '',
       query: '', sort: 'original',
     };
     this.form = StudentForm({
@@ -38,7 +43,6 @@ export class StudentsApp {
     filters.addEventListener('change', () => this.setState({ query: filters.elements.q.value, sort: filters.elements.sort.value }));
     filters.addEventListener('reset', () => this.setState({ query: '', sort: 'original' }));
     this.render();
-    this.loadStudents();
   }
 
   setState(patch, renderList = true) {
@@ -46,43 +50,33 @@ export class StudentsApp {
     this.render(renderList);
   }
 
-  async loadStudents() {
-    if (this.state.submitting) return;
-    this.setState({ loading: true, loadError: '' });
-    try {
-      this.setState({ students: await getStudents(), loaded: true, loading: false });
-    } catch (error) {
-      this.setState({ loading: false, loaded: false, loadError: messageFor(error) });
-    }
-  }
 
-  async addStudent() {
-    if (this.state.submitting || this.state.loading || !this.state.loaded) return;
+  addStudent() {
+    if (this.state.submitting) return;
     const input = { name: this.state.form.name.trim(), email: this.state.form.email.trim() };
     const errors = validate(input);
+    if (this.state.students.some(student => normalize(student.email) === normalize(input.email))) {
+      errors.email = 'Email này đã có trong danh sách.';
+    }
     this.setState({ form: input, errors, submitError: '', notice: '' }, false);
     if (Object.keys(errors).length) return this.form.focusInvalid(errors);
     this.setState({ submitting: true }, false);
-    try {
-      const student = await createStudent(input);
-      this.setState({
-        students: [...this.state.students, student], // Mảng mới kích hoạt render danh sách.
-        form: { name: '', email: '' }, errors: {}, submitting: false,
-        query: '', sort: 'original', // Dòng mới luôn hiện kể cả khi đang lọc/sắp xếp.
-        notice: `Đã thêm ${student.name} vào danh sách.`,
-      });
-      this.root.querySelector('#student-filters').reset();
-      this.form.element.elements.namedItem('name').focus();
-    } catch (error) {
-      this.setState({ submitting: false, errors: error.errors || {}, submitError: messageFor(error) }, false);
-      this.form.focusInvalid(this.state.errors); // Lỗi giữ lại input, cho phép sửa/gửi lại.
-    }
+    const nextID = Math.max(0, ...this.state.students.map(student => Number(student.id) || 0)) + 1;
+    const student = { id: String(nextID).padStart(3, '0'), ...input };
+    this.setState({
+      students: [...this.state.students, student],
+      form: { name: '', email: '' }, errors: {}, submitting: false,
+      query: '', sort: 'original',
+      notice: `Đã thêm ${student.name} vào danh sách.`,
+    });
+    this.root.querySelector('#student-filters').reset();
+    this.form.element.elements.namedItem('name').focus();
   }
 
   render(renderList = true) {
     const state = this.state;
     this.form.update({ values: state.form, errors: state.errors, submitting: state.submitting,
-      ready: state.loaded && !state.loading, error: state.submitError });
+      ready: true, error: state.submitError });
     const notice = this.root.querySelector('#app-notice');
     notice.textContent = state.notice;
     notice.hidden = !state.notice;
@@ -94,11 +88,10 @@ export class StudentsApp {
       students.sort((a, b) => (state.sort === 'name-desc' ? -1 : 1) * a.name.localeCompare(b.name, 'vi'));
     }
     const content = this.root.querySelector('#student-list-content');
-    content.setAttribute('aria-busy', String(state.loading));
-    content.replaceChildren(StudentList({ students, total: state.students.length, loading: state.loading,
-      error: state.loadError, filtered: Boolean(needle), onRetry: () => this.loadStudents() }));
-    this.root.querySelector('#student-total').textContent = state.loaded ? state.students.length : '—';
-    this.root.querySelector('#student-count').textContent = state.loaded ? students.length : '—';
+    content.setAttribute('aria-busy', 'false');
+    content.replaceChildren(StudentList({ students, total: state.students.length, filtered: Boolean(needle) }));
+    this.root.querySelector('#student-total').textContent = state.students.length;
+    this.root.querySelector('#student-count').textContent = students.length;
   }
 }
 

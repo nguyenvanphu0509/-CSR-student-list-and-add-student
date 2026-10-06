@@ -7,24 +7,15 @@ function cell(value, className = '') {
   return node;
 }
 
-export function StudentList({ students, total, loading, error, filtered, onRetry }) {
+export function StudentList({ students, total, filtered }) {
   const content = document.createElement('div');
-  if (loading || error || !students.length) {
+  if (!students.length) {
     const empty = document.createElement('div');
     empty.className = 'empty-state';
     const message = document.createElement('p');
-    message.setAttribute('role', error ? 'alert' : 'status');
-    message.textContent = loading ? 'Đang tải danh sách sinh viên…' : error
-      || (filtered ? 'Không tìm thấy tên hoặc email phù hợp.' : 'Lớp học đang chờ thành viên đầu tiên. Điền form để thêm sinh viên.');
+    message.setAttribute('role', 'status');
+    message.textContent = filtered ? 'Không tìm thấy tên hoặc email phù hợp.' : 'Lớp học đang chờ thành viên đầu tiên. Điền form để thêm sinh viên.';
     empty.append(message);
-    if (error) {
-      const button = document.createElement('button');
-      button.className = 'button button-secondary';
-      button.type = 'button';
-      button.textContent = 'Thử lại';
-      button.addEventListener('click', onRetry);
-      empty.append(button);
-    }
     content.append(empty);
     return content;
   }
@@ -35,7 +26,7 @@ export function StudentList({ students, total, loading, error, filtered, onRetry
   region.setAttribute('aria-label', 'Bảng sinh viên, có thể cuộn ngang');
   const table = document.createElement('table');
   // Chỉ markup tĩnh đi qua innerHTML. Dữ liệu người dùng dùng textContent bên dưới.
-  table.innerHTML = '<caption class="sr-only">Danh sách sinh viên gồm số thứ tự, họ tên, email và hồ sơ.</caption><thead><tr><th scope="col" class="number-cell">STT</th><th scope="col">SINH VIÊN</th><th scope="col">EMAIL</th><th scope="col" class="actions-cell">HỒ SƠ</th></tr></thead>';
+  table.innerHTML = '<caption class="sr-only">Danh sách sinh viên gồm số thứ tự, họ tên và email.</caption><thead><tr><th scope="col" class="number-cell">STT</th><th scope="col">SINH VIÊN</th><th scope="col">EMAIL</th></tr></thead>';
   const body = document.createElement('tbody');
   students.forEach((student, index) => {
     const row = document.createElement('tr');
@@ -57,14 +48,7 @@ export function StudentList({ students, total, loading, error, filtered, onRetry
     name.append(code);
     identity.append(avatar, name);
     identityCell.append(identity);
-    const actions = cell('', 'actions-cell');
-    const link = document.createElement('a');
-    link.className = 'row-action';
-    link.href = `/students/${encodeURIComponent(student.id)}`;
-    link.textContent = 'Chi tiết ↗';
-    link.setAttribute('aria-label', `Xem hồ sơ ${student.name}`);
-    actions.append(link);
-    row.append(identityCell, cell(student.email, 'email-cell'), actions);
+    row.append(identityCell, cell(student.email, 'email-cell'));
     body.append(row);
   });
   table.append(body);

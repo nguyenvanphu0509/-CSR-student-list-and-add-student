@@ -67,38 +67,27 @@ test('CSR serves an empty shell; API returns JSON, persists, validates and repor
   assert.ok((await failure.json()).message);
 });
 
-async function until(check) {
-  const deadline = Date.now() + 3000;
-  while (!check()) {
-    if (Date.now() > deadline) throw new Error('Timed out waiting for CSR state');
-    await new Promise(resolve => setTimeout(resolve, 10));
-  }
-}
-
-test('browser state, controlled inputs, add, duplicate, retry, empty list and safe rendering work without navigation', async t => {
+test('browser renders local seed and adds students without network requests or navigation', async t => {
   const f = await fixture(t, []);
   const dom = new JSDOM(await (await f.request('/csr')).text(), { url: `${f.base}/csr`, runScripts: 'outside-only' });
   t.after(() => dom.window.close());
   const { window } = dom;
   const requests = [];
-  let offline = true;
   window.structuredClone = structuredClone;
-  window.fetch = (path, options) => {
-    requests.push({ path, method: options.method || 'GET' });
-    if (offline) return Promise.reject(new window.TypeError('Offline'));
-    return fetch(new URL(path, f.base), options);
+  window.fetch = (...args) => {
+    requests.push(args);
+    throw new Error('CSR không được gọi network');
   };
   // jsdom không thực thi module scripts: giữ nguyên code, chỉ bỏ cú pháp module để chạy chung.
-  const modules = await Promise.all(['api.js', 'components/student-list.js', 'components/student-form.js', 'app.js']
+  const modules = await Promise.all(['components/student-list.js', 'components/student-form.js', 'app.js']
     .map(path => readFile(new URL(`../frontend/js/${path}`, import.meta.url), 'utf8')));
   window.eval(modules.map(source => source.replace(/^import .*;\n/gm, '').replace(/^export /gm, '')).join('\n'));
   const document = window.document;
-  await until(() => window.getStudentState().loadError);
-  assert.match(document.querySelector('#student-list-content').textContent, /Không kết nối/);
-  offline = false;
-  document.querySelector('#student-list-content button').click();
-  await until(() => window.getStudentState().loaded);
-  assert.match(document.querySelector('#student-list-content').textContent, /thành viên đầu tiên/);
+  const initialStudents = window.getStudentState().students;
+  assert.equal(initialStudents.length, 3);
+  assert.deepEqual(initialStudents.map(student => student.id), ['001', '002', '003']);
+  assert.equal(document.querySelectorAll('#student-list-content tbody tr').length, 3);
+  assert.equal(document.querySelector('#student-total').textContent, '3');
   const main = document.querySelector('main');
   const form = document.querySelector('#student-form-content form');
   function input(key, value) {
@@ -112,9 +101,8 @@ test('browser state, controlled inputs, add, duplicate, retry, empty list and sa
   }
   input('name', '');
   input('email', 'bad');
-  const before = requests.length;
   submit();
-  assert.equal(requests.length, before); // Validation chặn request trước khi gọi API.
+  assert.equal(requests.length, 0);
   assert.equal(document.activeElement, form.elements.namedItem('name'));
   input('name', '<img src=x onerror=alert(1)>');
   input('email', 'safe@example.com');
@@ -123,11 +111,9 @@ test('browser state, controlled inputs, add, duplicate, retry, empty list and sa
   snapshot.form.name = 'Không được sửa state thật';
   assert.notEqual(window.getStudentState().form.name, snapshot.form.name);
   submit();
-  assert.equal(form.querySelector('button').disabled, true);
-  submit(); // Submit liên tiếp khi đang lưu không tạo POST thứ hai.
-  await until(() => window.getStudentState().students.length === 1);
-  assert.equal(requests.filter(r => r.method === 'POST').length, 1);
-  assert.equal(document.querySelector('#student-total').textContent, '1');
+  assert.equal(window.getStudentState().students.length, 4);
+  assert.equal(window.getStudentState().students.at(-1).id, '004');
+  assert.equal(document.querySelector('#student-total').textContent, '4');
   assert.equal(document.querySelector('#student-list-content img'), null);
   assert.match(document.querySelector('#student-list-content').textContent, /<img src=x/);
   assert.equal(form.elements.namedItem('name').value, '');
@@ -135,29 +121,22 @@ test('browser state, controlled inputs, add, duplicate, retry, empty list and sa
   assert.equal(document.querySelector('main'), main);
   assert.equal(document.querySelector('#student-form-content form'), form);
   assert.equal(window.location.href, `${f.base}/csr`);
-  assert.ok(requests.every(r => r.path === '/api/students')); // Không fetch HTML sau submit.
-  input('name', 'Tên mới');
-  input('email', 'SAFE@example.com');
+  assert.equal(requests.length, 0);
+  input('name', 'Email trùng');
+  input('email', initialStudents[0].email.toUpperCase());
   submit();
-  await until(() => !window.getStudentState().submitting);
   assert.ok(window.getStudentState().errors.email);
-  assert.equal(window.getStudentState().students.length, 1);
-  assert.equal(form.elements.namedItem('email').value, 'SAFE@example.com');
+  assert.equal(window.getStudentState().students.length, 4);
+  assert.equal(form.elements.namedItem('email').value, initialStudents[0].email.toUpperCase());
+  input('name', 'Tên mới');
   input('email', 'next@example.com');
-  offline = true;
-  submit();
-  await until(() => !window.getStudentState().submitting);
-  assert.match(window.getStudentState().submitError, /Không kết nối/);
-  assert.equal(form.elements.namedItem('email').value, 'next@example.com');
-  assert.equal(window.getStudentState().students.length, 1);
-  offline = false;
   const search = document.querySelector('#student-search');
   search.value = 'Không khớp';
   search.dispatchEvent(new window.Event('input', { bubbles: true }));
   assert.match(document.querySelector('#student-list-content').textContent, /Không tìm thấy/);
   submit();
-  await until(() => window.getStudentState().students.length === 2);
+  assert.equal(window.getStudentState().students.length, 5);
   assert.equal(search.value, '');
-  assert.equal(document.querySelectorAll('#student-list-content tbody tr').length, 2);
-  assert.equal((await (await f.request('/api/students')).json()).students.length, 2);
+  assert.equal(document.querySelectorAll('#student-list-content tbody tr').length, 5);
+  assert.equal(requests.length, 0);
 });
