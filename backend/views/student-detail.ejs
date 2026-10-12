@@ -1,16 +1,16 @@
 <%- include('partials/header', { title: 'Hồ sơ · ' + student.name }) %>
 <main id="main-content" class="dashboard profile-dashboard">
-  <div class="profile-breadcrumb"><a href="<%= backURL %>">Sinh viên</a><span>/</span><span>Hồ sơ <%= formatStudentId(student.id) %></span></div>
+  <div class="profile-breadcrumb"><a href="<%= backURL %>">Sinh viên</a><span>/</span><span>Hồ sơ <%= student.studentCode || formatStudentId(student.id) %></span></div>
   <section class="profile-cover">
     <div><p class="eyebrow">STUDENTSPACE / HỒ SƠ THÀNH VIÊN</p><h1>Mỗi thành viên,<br>một câu chuyện.</h1></div>
-    <span class="profile-cover-art" aria-hidden="true">✳</span><span class="profile-cover-id"><%= formatStudentId(student.id) %></span>
+    <span class="profile-cover-art" aria-hidden="true">✳</span><span class="profile-cover-id"><%= student.studentCode || formatStudentId(student.id) %></span>
   </section>
   <div class="profile-layout">
     <aside class="panel profile-card">
       <div class="profile-avatar" aria-hidden="true"><%= student.name.split(/\s+/).map(word => word[0]).slice(-2).join('').toUpperCase() %></div>
       <span class="status-pill <%= student.status === 'paused' ? 'status-paused' : '' %>"><span></span><%= student.status === 'paused' ? 'Nghỉ học' : 'Đang học' %></span>
       <h2><%= student.name %></h2><p class="profile-email"><%= student.email %></p>
-      <div class="profile-meta"><div><span>Mã sinh viên</span><strong><%= formatStudentId(student.id) %></strong></div><div><span>Lớp học</span><strong><%= student.className || 'Chưa cập nhật' %></strong></div></div>
+      <div class="profile-meta"><div><span>Mã số sinh viên (MSSV)</span><strong><%= student.studentCode || formatStudentId(student.id) %></strong></div><div><span>Lớp học</span><strong><%= student.className || 'Chưa cập nhật' %></strong></div></div>
       <a class="button button-primary" href="/students/<%= encodeURIComponent(student.id) %>/edit">Chỉnh sửa hồ sơ <span aria-hidden="true">↗</span></a>
       <a class="profile-trash-link" href="/students/<%= encodeURIComponent(student.id) %>/delete">Chuyển vào thùng rác</a>
     </aside>

@@ -95,18 +95,22 @@ test('browser renders local seed and adds students without network requests or n
   assert.equal(initialStudents.length, 3);
   assert.deepEqual(initialStudents.map(student => student.id), ['24127152', '24127489', '24127353']);
   for (const student of initialStudents) {
-    assert.equal(student.studentCode, `SV${student.id}`);
+    assert.equal(student.studentCode, student.id);
     assert.equal(student.phone, '');
     assert.equal(student.dob, '');
     assert.equal(student.className, '');
     assert.equal(student.status, 'studying');
   }
-  assert.ok(window.eval("validate({ name: 'An', email: 'an@example.com', phone: '', dob: '2026-02-30', className: '', status: 'studying' }).dob"));
-  assert.ok(window.eval("validate({ name: 'An', email: 'an@example.com', phone: '', dob: '', className: '', status: 'unknown' }).status"));
+  assert.ok(window.eval("validate({ name: 'An', email: 'an@example.com', studentCode: '12345678', phone: '', dob: '2026-02-30', className: '', status: 'studying' }).dob"));
+  assert.ok(window.eval("validate({ name: 'An', email: 'an@example.com', studentCode: '1234567x', phone: '', dob: '', className: '', status: 'unknown' }).studentCode"));
   assert.equal(document.querySelectorAll('#student-list-content tbody tr').length, 3);
   assert.equal(document.querySelector('#student-total').textContent, '3');
   const main = document.querySelector('main');
   const form = document.querySelector('#student-form-content form');
+  const mssv = form.elements.namedItem('studentCode');
+  assert.equal(mssv.maxLength, 8);
+  assert.equal(mssv.minLength, 8);
+  assert.equal(mssv.pattern, '[0-9]{8}');
   function input(key, value) {
     form.elements.namedItem(key).value = value;
     form.elements.namedItem(key).dispatchEvent(new window.Event('input', { bubbles: true }));
@@ -128,6 +132,7 @@ test('browser renders local seed and adds students without network requests or n
   assert.equal(document.activeElement, form.elements.namedItem('name'));
   input('name', '<img src=x onerror=alert(1)>');
   input('email', 'safe@example.com');
+  input('studentCode', '12345678');
   input('phone', '090 123 4567');
   input('dob', '2004-05-20');
   input('className', 'JavaScript 02');
@@ -140,7 +145,7 @@ test('browser renders local seed and adds students without network requests or n
   assert.equal(window.getStudentState().students.length, 4);
   const addedStudent = window.getStudentState().students.at(-1);
   assert.equal(addedStudent.id, '24127490');
-  assert.equal(addedStudent.studentCode, 'SV24127490');
+  assert.equal(addedStudent.studentCode, '12345678');
   assert.equal(addedStudent.phone, '090 123 4567');
   assert.equal(addedStudent.dob, '2004-05-20');
   assert.equal(addedStudent.className, 'JavaScript 02');
@@ -152,6 +157,7 @@ test('browser renders local seed and adds students without network requests or n
   assert.match(document.querySelector('#student-list-content').textContent, /<img src=x/);
   assert.equal(form.elements.namedItem('name').value, '');
   assert.equal(form.elements.namedItem('email').value, '');
+  assert.equal(form.elements.namedItem('studentCode').value, '');
   assert.equal(form.elements.namedItem('phone').value, '');
   assert.equal(form.elements.namedItem('dob').value, '');
   assert.equal(form.elements.namedItem('className').value, '');
@@ -166,8 +172,15 @@ test('browser renders local seed and adds students without network requests or n
   assert.ok(window.getStudentState().errors.email);
   assert.equal(window.getStudentState().students.length, 4);
   assert.equal(form.elements.namedItem('email').value, initialStudents[0].email.toUpperCase());
+  input('name', 'MSSV trùng');
+  input('email', 'another@example.com');
+  input('studentCode', initialStudents[0].studentCode);
+  submit();
+  assert.ok(window.getStudentState().errors.studentCode);
+  assert.equal(window.getStudentState().students.length, 4);
   input('name', 'Tên mới');
   input('email', 'next@example.com');
+  input('studentCode', '12345679');
   const search = document.querySelector('#student-search');
   search.value = 'Không khớp';
   search.dispatchEvent(new window.Event('input', { bubbles: true }));

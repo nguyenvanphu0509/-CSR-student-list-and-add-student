@@ -11,6 +11,9 @@ export function StudentForm({ onInput, onSubmit }) {
       <input id="email" name="email" type="email" maxlength="254" autocomplete="email" placeholder="sinhvien@example.com" required aria-describedby="email-help email-error">
       <p class="field-help" id="email-help">Mỗi sinh viên sử dụng một email riêng.</p>
       <p class="field-error" id="email-error" hidden></p></div>
+    <div class="field"><label for="studentCode">Mã số sinh viên (MSSV) <span class="required">*</span></label>
+      <input id="studentCode" name="studentCode" type="text" inputmode="numeric" autocomplete="off" minlength="8" maxlength="8" pattern="[0-9]{8}" placeholder="Nhập đúng 8 chữ số" required aria-describedby="studentCode-error">
+      <p class="field-error" id="studentCode-error" hidden></p></div>
     <div class="optional-fields">
       <div class="field"><label for="phone">Số điện thoại</label>
         <input id="phone" name="phone" type="tel" maxlength="254" autocomplete="tel" placeholder="Ví dụ: 090 123 4567" aria-describedby="phone-error">
@@ -31,7 +34,7 @@ export function StudentForm({ onInput, onSubmit }) {
     <button class="button button-primary" type="submit">＋ Thêm vào danh sách</button>
     <p class="form-footnote">Các trường có dấu <span class="required">*</span> là bắt buộc.</p>`;
   element.addEventListener('input', event => {
-    if (['name', 'email', 'phone', 'dob', 'className', 'status'].includes(event.target.name)) {
+    if (['name', 'email', 'studentCode', 'phone', 'dob', 'className', 'status'].includes(event.target.name)) {
       onInput(event.target.name, event.target.value);
     }
   });
@@ -45,7 +48,7 @@ export function StudentForm({ onInput, onSubmit }) {
 
   function update({ values, errors, submitting, ready, error }) {
     element.setAttribute('aria-busy', String(submitting));
-    for (const key of ['name', 'email', 'phone', 'dob', 'className', 'status']) {
+    for (const key of ['name', 'email', 'studentCode', 'phone', 'dob', 'className', 'status']) {
       const input = element.elements.namedItem(key);
       // Không gán lại value khi đang gõ để giữ vị trí con trỏ.
       if (input.value !== values[key]) input.value = values[key];
@@ -63,7 +66,7 @@ export function StudentForm({ onInput, onSubmit }) {
     message.hidden = !error;
   }
   function focusInvalid(errors) {
-    const key = ['name', 'email', 'phone', 'dob', 'className', 'status'].find(field => errors[field]);
+    const key = ['name', 'email', 'studentCode', 'phone', 'dob', 'className', 'status'].find(field => errors[field]);
     if (key) element.elements.namedItem(key).focus();
   }
   return { element, update, focusInvalid };

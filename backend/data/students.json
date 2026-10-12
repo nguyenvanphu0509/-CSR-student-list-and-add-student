@@ -257,5 +257,27 @@
     "name": "jkasfjkda",
     "email": "nguyendbfadhjd@gmail.com",
     "id": "012"
+  },
+  {
+    "studentCode": "24123258",
+    "phone": "0813902082",
+    "dob": "2006-05-30",
+    "className": "Java2",
+    "status": "studying",
+    "createdAt": "2026-10-12T01:45:01.953Z",
+    "updatedAt": "2026-10-12T01:45:01.953Z",
+    "deletedAt": null,
+    "activity": [
+      {
+        "id": "660a5495-9999-48b0-87d5-e9aaa1cf5c2f",
+        "action": "created",
+        "at": "2026-10-12T01:45:01.953Z",
+        "name": "dat nguyen",
+        "fields": []
+      }
+    ],
+    "name": "dat nguyen",
+    "email": "nvtdat30052006@gmail.com",
+    "id": "013"
   }
 ]
