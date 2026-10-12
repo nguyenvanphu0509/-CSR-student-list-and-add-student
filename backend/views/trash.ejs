@@ -4,7 +4,7 @@
   <section class="panel archive-panel">
     <% if (!students.length) { %><div class="empty-state"><span class="empty-icon" aria-hidden="true">↺</span><h3>Thùng rác đang trống</h3><p>Các hồ sơ đã xóa sẽ xuất hiện tại đây.</p></div><% } else { %>
     <div class="table-scroll"><table><thead><tr><th>ID</th><th>SINH VIÊN</th><th>CHUYỂN VÀO THÙNG RÁC</th><th>THAO TÁC</th></tr></thead><tbody>
-      <% for (const student of students) { %><tr><td><%= formatStudentId(student.id) %></td><td><strong><%= student.name %></strong><p class="muted"><%= student.email %></p></td><td><%= formatTime(student.deletedAt) %></td><td><form action="/students/<%= encodeURIComponent(student.id) %>/restore" method="post"><button class="button button-primary" type="submit">↺ Khôi phục</button></form></td></tr><% } %>
+      <% for (const student of students) { %><tr><td><%= student.studentCode || formatStudentId(student.id) %></td><td><strong><%= student.name %></strong><p class="muted"><%= student.email %></p></td><td><%= formatTime(student.deletedAt) %></td><td><form action="/students/<%= encodeURIComponent(student.id) %>/restore" method="post"><button class="button button-primary" type="submit">↺ Khôi phục</button></form></td></tr><% } %>
     </tbody></table></div><% } %>
   </section>
 </main>

@@ -5,6 +5,9 @@ import { randomUUID } from 'node:crypto';
 export class DuplicateEmailError extends Error {
   constructor() { super('Email này đã được sử dụng, có thể thuộc hồ sơ trong thùng rác.'); this.name = 'DuplicateEmailError'; }
 }
+export class DuplicateStudentCodeError extends Error {
+  constructor() { super('MSSV này đã được sử dụng.'); this.name = 'DuplicateStudentCodeError'; }
+}
 export class StudentNotFoundError extends Error {
   constructor() { super('Không tìm thấy sinh viên trong danh sách này.'); this.name = 'StudentNotFoundError'; this.status = 404; }
 }
@@ -53,6 +56,9 @@ export function createStudentStore(filePath) {
   function assertEmail(students, email, exceptID) {
     if (students.some((s) => s.id !== exceptID && s.email.toLowerCase() === email.toLowerCase())) throw new DuplicateEmailError();
   }
+  function assertStudentCode(students, studentCode) {
+    if (studentCode && students.some((student) => student.studentCode === studentCode)) throw new DuplicateStudentCodeError();
+  }
   function record(student, action, changedFields = []) {
     const at = new Date().toISOString();
     student.updatedAt = at;
@@ -77,6 +83,7 @@ export function createStudentStore(filePath) {
       return enqueue(async () => {
         const students = await readStudents();
         assertEmail(students, form.email);
+        assertStudentCode(students, form.studentCode);
         const used = new Set(students.map((s) => s.id));
         let id;
         for (let n = 1; n <= 999; n++) {

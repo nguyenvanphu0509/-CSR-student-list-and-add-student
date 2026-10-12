@@ -1,6 +1,6 @@
 // Đọc input, trim và validate, lấy danh sách, truyền dữ liệu sang template
 // và chuyển hướng sau khi lưu thành công.
-import { DuplicateEmailError, StudentCapacityError } from '../repositories/student-store.js';
+import { DuplicateEmailError, DuplicateStudentCodeError, StudentCapacityError } from '../repositories/student-store.js';
 
 function readForm(body) {
   const form = {
@@ -8,20 +8,26 @@ function readForm(body) {
     email: typeof body?.email === 'string' ? body.email.trim() : '',
   };
   // Hồ sơ phụ là tùy chọn. Chỉ lấy field được gửi để sửa tên inline không xóa hồ sơ.
-  for (const key of ['studentCode', 'phone', 'dob', 'className', 'status']) {
+  if (body && Object.hasOwn(body, 'studentCode')) {
+    form.studentCode = typeof body.studentCode === 'string' ? body.studentCode.trim() : '';
+  }
+  for (const key of ['phone', 'dob', 'className', 'status']) {
     if (body && Object.hasOwn(body, key)) form[key] = typeof body[key] === 'string' ? body[key].trim().slice(0, 254) : '';
   }
   if (form.status !== undefined) form.status = form.status === 'paused' ? 'paused' : 'studying';
   return form;
 }
 
-function validate(form) {
+function validate(form, { requireStudentCode = false } = {}) {
   const errors = {};
   if (!form.name) errors.name = 'Vui lòng nhập họ và tên.';
   else if (form.name.length > 120) errors.name = 'Họ và tên tối đa 120 ký tự.';
   if (!form.email) errors.email = 'Vui lòng nhập email.';
   else if (form.email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
     errors.email = 'Vui lòng nhập email đúng định dạng, ví dụ an@example.com.';
+  }
+  if ((requireStudentCode || form.studentCode !== undefined) && !/^\d{8}$/.test(form.studentCode || '')) {
+    errors.studentCode = 'MSSV phải gồm đúng 8 chữ số.';
   }
   return errors;
 }
@@ -92,7 +98,7 @@ export function createStudentController(store) {
     },
     async create(req, res) {
       const form = readForm(req.body);
-      const errors = validate(form);
+      const errors = validate(form, { requireStudentCode: !wantsJSON(req) });
       if (Object.keys(errors).length) {
         if (wantsJSON(req)) return res.status(422).json({ errors, message: 'Vui lòng kiểm tra thông tin sinh viên.' });
         return renderPage(res, { status: 422, form, errors });
@@ -109,6 +115,10 @@ export function createStudentController(store) {
         if (error instanceof DuplicateEmailError) {
           if (wantsJSON(req)) return res.status(422).json({ errors: { email: error.message }, message: error.message });
           return renderPage(res, { status: 422, form, errors: { email: error.message } });
+        }
+        if (error instanceof DuplicateStudentCodeError) {
+          if (wantsJSON(req)) return res.status(422).json({ errors: { studentCode: error.message }, message: error.message });
+          return renderPage(res, { status: 422, form, errors: { studentCode: error.message } });
         }
         throw error;
       }

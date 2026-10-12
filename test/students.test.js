@@ -20,6 +20,7 @@ async function fixture(t, students = seed) {
   let server;
   let base;
   const logs = [];
+  let nextMSSV = 90000000;
   async function start() {
     server = createApp({ dataFile, logger: { error: (error) => logs.push(error) } }).listen(0, '127.0.0.1');
     await once(server, 'listening');
@@ -40,10 +41,16 @@ async function fixture(t, students = seed) {
     directory, dataFile, logs,
     restore: (id) => fetch(`${base}/students/${encodeURIComponent(id)}/restore`, { method: 'POST', redirect: 'manual' }),
     get: (path = '/students') => fetch(`${base}${path}`, { redirect: 'manual' }),
-    post: (values) => fetch(`${base}/students`, {
-      method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(values), redirect: 'manual',
-    }),
+    post: (values, { includeMSSV = true } = {}) => {
+      const generatedMSSV = String(++nextMSSV);
+      const fields = Array.isArray(values)
+        ? [...values, ...(includeMSSV ? [['studentCode', generatedMSSV]] : [])]
+        : { ...(includeMSSV ? { studentCode: generatedMSSV } : {}), ...values };
+      return fetch(`${base}/students`, {
+        method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(fields), redirect: 'manual',
+      });
+    },
     manage: (id, values) => fetch(`${base}/students/${encodeURIComponent(id)}`, {
       method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams(values), redirect: 'manual',
@@ -64,6 +71,7 @@ test('GET renders seed students as HTML; CSS is public, JSON is private; root re
     assert.ok(html.includes(student.email));
   }
   assert.match(html, /<form action="\/students" method="post"/);
+  assert.match(html, /name="studentCode"[^>]*maxlength="8"[^>]*pattern="\[0-9\]\{8\}"[^>]*required/);
   const root = await f.get('/');
   assert.equal(root.status, 200);
   const welcome = await root.text();
@@ -79,7 +87,7 @@ test('GET renders seed students as HTML; CSS is public, JSON is private; root re
 
 test('valid POST trims fields, persists, redirects; reload and restart preserve a single record', async (t) => {
   const f = await fixture(t);
-  const response = await f.post({ name: '  Phạm Gia Hân  ', email: '  han@example.com  ' });
+  const response = await f.post({ name: '  Phạm Gia Hân  ', email: '  han@example.com  ', studentCode: '01234567' });
   assert.equal(response.status, 303);
   assert.equal(response.headers.get('location'), '/students?created=1');
   let students = await f.read();
@@ -87,6 +95,7 @@ test('valid POST trims fields, persists, redirects; reload and restart preserve 
   const added = students.at(-1);
   assert.equal(added.name, 'Phạm Gia Hân');
   assert.equal(added.email, 'han@example.com');
+  assert.equal(added.studentCode, '01234567');
   assert.match(added.id, /^\d{3}$/);
   assert.equal(added.activity[0].action, 'created');
   const html = await (await f.get(response.headers.get('location'))).text();
@@ -288,20 +297,21 @@ test('student detail renders SSR, preserves list context, escapes content and re
   assert.equal((await f.get('/students/detail-1/delete')).status, 200);
 });
 
-test('profile fields persist; optional fields do not add validation; inline rename preserves the profile', async (t) => {
+test('MSSV and profile fields persist; optional profile fields do not add validation; inline rename preserves the profile', async (t) => {
   const f = await fixture(t, []);
-  const response = await f.post({ name: 'Hồ sơ mới', email: 'profile@example.com', studentCode: 'SV2026', phone: '0901234567', dob: '2004-05-20', className: 'JavaScript 02', status: 'paused' });
+  const response = await f.post({ name: 'Hồ sơ mới', email: 'profile@example.com', studentCode: '01234567', phone: '0901234567', dob: '2004-05-20', className: 'JavaScript 02', status: 'paused' });
   assert.equal(response.status, 303);
   const [added] = await f.read();
   assert.equal(added.id, '001');
+  assert.equal(added.studentCode, '01234567');
   assert.equal(added.phone, '0901234567');
   assert.equal(added.dob, '2004-05-20');
   assert.equal(added.className, 'JavaScript 02');
   const html = await (await f.get('/students/001')).text();
   assert.match(html, /20\/05\/2004/);
   assert.match(html, /Nghỉ học/);
-  assert.match(html, /<span>Mã sinh viên<\/span><strong>SV001<\/strong>/);
-  assert.doesNotMatch(html, /SV2026|ID sinh viên|Block 2/);
+  assert.match(html, /<span>Mã số sinh viên \(MSSV\)<\/span><strong>01234567<\/strong>/);
+  assert.match(html, /01234567/);
   const editHTML = await (await f.get('/students/001/edit')).text();
   assert.doesNotMatch(editHTML, /name="studentCode"/);
   assert.equal((await f.manage('001', { _method: 'PUT', name: 'Tên mới', email: added.email })).status, 303);
@@ -310,6 +320,24 @@ test('profile fields persist; optional fields do not add validation; inline rena
   assert.equal(edited.activity.at(-1).action, 'updated');
   assert.deepEqual(edited.activity.at(-1).fields, ['name']);
   assert.equal((await f.post({ name: 'Tùy chọn', email: 'optional@example.com', phone: 'chưa rõ', dob: '', className: '' })).status, 303);
+});
+
+test('SSR validates MSSV as eight digits and rejects duplicates without writing', async (t) => {
+  const f = await fixture(t, []);
+  const missing = await f.post({ name: 'Thiếu MSSV', email: 'missing@example.com' }, { includeMSSV: false });
+  assert.equal(missing.status, 422);
+  assert.match(await missing.text(), /MSSV phải gồm đúng 8 chữ số/);
+  for (const studentCode of ['1234567', '123456789', '1234ABCD']) {
+    const response = await f.post({ name: 'MSSV không hợp lệ', email: `${studentCode}@example.com`, studentCode }, { includeMSSV: false });
+    assert.equal(response.status, 422);
+    assert.match(await response.text(), /MSSV phải gồm đúng 8 chữ số/);
+  }
+  assert.deepEqual(await f.read(), []);
+  assert.equal((await f.post({ name: 'Sinh viên A', email: 'a@example.com', studentCode: '00123456' })).status, 303);
+  const duplicate = await f.post({ name: 'Sinh viên B', email: 'b@example.com', studentCode: '00123456' });
+  assert.equal(duplicate.status, 422);
+  assert.match(await duplicate.text(), /MSSV này đã được sử dụng/);
+  assert.equal((await f.read()).length, 1);
 });
 
 test('trash reserves IDs/emails, restores the same profile, and history survives restart', async (t) => {

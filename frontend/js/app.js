@@ -6,10 +6,10 @@ const initialStudents = [
   { id: '24127489', name: 'Nguyễn Văn Phú', email: 'vanphu@example.com' },
   { id: '24127353', name: 'Nguyễn Vũ Duy', email: 'vuduy@example.com' },
 ].map(student => ({
-  studentCode: `SV${student.id}`, phone: '', dob: '', className: '', status: 'studying', ...student,
+  studentCode: student.id, phone: '', dob: '', className: '', status: 'studying', ...student,
 }));
 
-const emptyForm = () => ({ name: '', email: '', phone: '', dob: '', className: '', status: 'studying' });
+const emptyForm = () => ({ name: '', email: '', studentCode: '', phone: '', dob: '', className: '', status: 'studying' });
 const normalize = value => value.normalize('NFD').replace(/\p{M}/gu, '').replace(/[đĐ]/g, 'd').toLocaleLowerCase('vi');
 
 function isValidDate(value) {
@@ -18,12 +18,13 @@ function isValidDate(value) {
   return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
-function validate({ name, email, phone, dob, className, status }) {
+function validate({ name, email, studentCode, phone, dob, className, status }) {
   const errors = {};
   if (!name) errors.name = 'Vui lòng nhập họ và tên.';
   else if (name.length > 120) errors.name = 'Họ và tên tối đa 120 ký tự.';
   if (!email) errors.email = 'Vui lòng nhập email.';
   else if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = 'Vui lòng nhập email đúng định dạng.';
+  if (!/^\d{8}$/.test(studentCode || '')) errors.studentCode = 'MSSV phải gồm đúng 8 chữ số.';
   if (phone.length > 254) errors.phone = 'Số điện thoại tối đa 254 ký tự.';
   if (dob && !isValidDate(dob)) errors.dob = 'Ngày sinh không hợp lệ.';
   if (className.length > 254) errors.className = 'Lớp học tối đa 254 ký tự.';
@@ -78,6 +79,7 @@ export class StudentsApp {
       ...this.state.form,
       name: this.state.form.name.trim(),
       email: this.state.form.email.trim(),
+      studentCode: this.state.form.studentCode.trim(),
       phone: this.state.form.phone.trim(),
       dob: this.state.form.dob.trim(),
       className: this.state.form.className.trim(),
@@ -86,12 +88,15 @@ export class StudentsApp {
     if (this.state.students.some(student => normalize(student.email) === normalize(input.email))) {
       errors.email = 'Email này đã có trong danh sách.';
     }
+    if (this.state.students.some(student => student.studentCode === input.studentCode)) {
+      errors.studentCode = 'MSSV này đã có trong danh sách.';
+    }
     this.setState({ form: input, errors, submitError: '', notice: '' }, false);
     if (Object.keys(errors).length) return this.form.focusInvalid(errors);
     this.setState({ submitting: true }, false);
     const nextID = Math.max(0, ...this.state.students.map(student => Number(student.id) || 0)) + 1;
     const id = String(nextID).padStart(3, '0');
-    const student = { id, studentCode: `SV${id}`, ...input };
+    const student = { id, ...input };
     const event = { id: `${Date.now()}-${this.state.activity.length}`, action: 'created', at: new Date().toISOString(), name: student.name, studentId: student.id };
     this.setState({
       students: [...this.state.students, student],

@@ -31,7 +31,7 @@ Nếu cổng bận: `PORT=3001 npm run dev`. Server lắng nghe trên `127.0.0.1
 | Input có kiểm soát | Event input cập nhật state.form; StudentForm.update() đồng bộ state → input |
 | Thêm không reload | preventDefault() → validate → tạo student trong browser → cập nhật state và render |
 | Dòng mới hiện ngay | Thêm vào state, reset bộ lọc/form; không gửi request mạng |
-| Trường hồ sơ | phone, dob, className, status nằm trong state; studentCode được tạo từ ID |
+| Trường hồ sơ | MSSV bắt buộc, đúng 8 chữ số; phone, dob, className, status là tùy chọn |
 | Điều hướng CSR | Danh sách, Thùng rác, Lịch sử dùng hash view; chỉ “So sánh bản SSR” mở `/students` |
 | Quan sát state | DevTools Console: getStudentState() trả bản sao state |
 | SSR vs CSR | /students trả HTML có sẵn dữ liệu; /csr dựng danh sách từ seed trong state browser |
@@ -104,7 +104,7 @@ Tên/email hiển thị qua `textContent`; `innerHTML` trong component chỉ ch�
 
 CSR dùng seed data trong `frontend/js/app.js`; thêm/xóa/khôi phục và activity chỉ tồn tại trong state của phiên browser, trở về seed ban đầu khi reload. Các view CSR dùng cùng bố cục/class CSS với trang SSR nhưng không dùng chung dữ liệu. SSR và API riêng vẫn dùng `backend/data/students.json`; các field hồ sơ phụ và lịch sử hiện có được giữ nguyên.
 
-Form CSR có name/email bắt buộc và phone/dob/className/status tùy chọn. Ngày sinh được kiểm tra định dạng ngày thật; status chỉ nhận `studying` hoặc `paused`; `studentCode` tự sinh từ ID. Tìm kiếm và sắp xếp chạy từ state trong browser. SSR vẫn có các chức năng riêng như sửa hồ sơ, phân trang, thùng rác và lịch sử bền vững; dữ liệu hai phiên bản không đồng bộ.
+Form CSR và SSR yêu cầu name, email và MSSV; MSSV được giữ dạng chuỗi đúng 8 chữ số để bảo toàn số 0 đầu, được kiểm tra định dạng và tính duy nhất trước khi lưu. Các trường phone, dob, className, status vẫn tùy chọn. Ngày sinh được kiểm tra định dạng ngày thật; status chỉ nhận `studying` hoặc `paused`. Tìm kiếm và sắp xếp CSR chạy từ state trong browser. SSR vẫn có các chức năng riêng như sửa hồ sơ, phân trang, thùng rác và lịch sử bền vững; dữ liệu hai phiên bản không đồng bộ.
 
 ## Kiểm tra
 
